@@ -37,3 +37,5 @@ void* memset(void*, int, uint);
 void* malloc(uint);
 void free(void*);
 int atoi(const char*);
+int getdate(struct rtcdate *);
+int sleep_sec(int sec);
