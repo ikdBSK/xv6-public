@@ -182,7 +182,7 @@ UPROGS=\
 	_wc\
 	_zombie\
 	_date\
-	_sleepsec\
+	_sleepsec
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
