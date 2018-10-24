@@ -7,6 +7,9 @@
 #include "mmu.h"
 #include "proc.h"
 
+#define DIFF_sec(a,b)   (b.second - a.second) + (b.minute - a.minute) * 60 +\
+                        (b.hour - a.hour) * 60*60 + (b.day - a.day) * 60*60*24
+
 int
 sys_fork(void)
 {
@@ -97,5 +100,29 @@ sys_getdate(void)
     if(argptr(0,(char **)&dp,sizeof(dp))<0)
         return -1;
     cmostime(dp);
+    return 0;
+}
+
+int
+sys_sleep_sec(void)
+{
+    //exection time, current time
+    struct rtcdate et,ct;
+    int sec;
+    if(argint(0, &sec) < 0)
+        return -1;
+    //get current time
+    cmostime(&et);
+    cmostime(&ct);
+    acquire(&tickslock);
+    while(DIFF_sec(et,ct) < sec){
+        if(myproc()->killed){
+            release(&tickslock);
+            return -1;
+        }
+        sleep(&ticks, &tickslock);
+        cmostime(&ct);
+    }
+    release(&tickslock);
     return 0;
 }
